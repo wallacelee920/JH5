@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魷魚遊戲 - 過三關</title>
+    <style>
+        :root {
+            --squid-pink: #ff6b9e;
+            --squid-red: #e84118;
+            --squid-dark: #2f3640;
+            --squid-light: #f5f6fa;
+            --squid-gold: #ffd700;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--squid-dark);
+            margin: 0;
+            padding: 0;
+            color: white;
+            background-image: url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            background-color: rgba(47, 54, 64, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+            margin: 30px;
+            width: 90%;
+            max-width: 800px;
+            border: 5px solid var(--squid-pink);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, 
+                var(--squid-pink) 0%, 
+                var(--squid-red) 50%, 
+                var(--squid-pink) 100%);
+        }
+        
+        h1 {
+            color: var(--squid-pink);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0 var(--squid-red);
+            letter-spacing: 3px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .mode-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            background-color: var(--squid-dark);
+            color: white;
+            border: 2px solid var(--squid-pink);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn:first-child {
+            border-radius: 5px 0 0 5px;
+            border-right: none;
+        }
+        
+        .mode-btn:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .mode-btn.active {
+            background-color: var(--squid-pink);
+            font-weight: bold;
+        }
+        
+        .player-setup {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .player-input {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .player-input label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .player-input input {
+            padding: 8px;
+            border: 2px solid var(--squid-pink);
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+        
+        .status {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            border: 2px solid var(--squid-pink);
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: var(--squid-dark);
+            padding: 15px;
+            border-radius: 10px;
+            aspect-ratio: 1/1;
+            border: 3px solid var(--squid-pink);
+        }
+        
+        .cell {
+            background-color: var(--squid-light);
+            border: 2px solid var(--squid-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 5px;
+            aspect-ratio: 1/1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cell:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--squid-pink);
+        }
+        
+        .x-symbol {
+            color: var(--squid-red);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .o-symbol {
+            color: var(--squid-pink);
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .winning-cell {
+            background-color: var(--squid-gold);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            padding: 10px 25px;
+            font-size: 1rem;
+            background-color: var(--squid-pink);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: var(--squid-red);
+            transform: scale(1.05);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stats-box {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid var(--squid-pink);
+        }
+        
+        .stats-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--squid-pink);
+            border-bottom: 2px solid var(--squid-pink);
+            padding-bottom: 5px;
+        }
+        
+        .stats-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .stats-label {
+            font-weight: bold;
+        }
+        
+        .stats-value {
+            color: var(--squid-gold);
+            font-weight: bold;
+        }
+        
+        .doll-mask {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/3631/3631589.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            z-index: -1;
+        }
+        
+        .circle-triangle {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background-image: url('https://cdn-icons-png.flaticon.com/512/147/147144.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.7;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="doll-mask"></div>
+    <div class="circle-triangle"></div>
+    
+    <div class="game-container">
+        <h1>❤️ 魷魚遊戲 - 過三關 ❤️</h1>
+        
+        <div class="mode-selector">
+            <button id="single-player-btn" class="mode-btn active">單人模式</button>
+            <button id="two-player-btn" class="mode-btn">雙人模式</button>
+        </div>
+        
+        <div class="player-setup">
+            <div class="player-input">
+                <label for="player1">玩家 1 (X):</label>
+                <input type="text" id="player1" placeholder="輸入玩家名稱" value="參賽者">
+            </div>
+            <div class="player-input" id="player2-input">
+                <label for="player2">玩家 2 (O):</label>
+                <input type="text" id="player2" placeholder="輸入玩家名稱" value="管理員">
+            </div>
+        </div>
+        
+        <div class="status" id="status">輪到: 參賽者 (X)</div>
+        
+        <div class="game-board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="reset">重新開始</button>
+            <button id="reset-stats">重置統計</button>
+        </div>
+        
+        <div class="stats-container">
+            <div class="stats-box">
+                <div class="stats-title">比賽統計</div>
+                <div class="stats-item">
+                    <span class="stats-label">玩家1 (X) 勝利:</span>
+                    <span class="stats-value" id="player1-wins">0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">玩家2 (O) 勝利:</span>
+                    <span class="stats-value" id="player2-wins">0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">管理員勝利:</span>
+                    <span class="stats-value" id="ai-wins">0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">平局:</span>
+                    <span class="stats-value" id="ties">0</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">總比賽場數:</span>
+                    <span class="stats-value" id="total-games">0</span>
+                </div>
+            </div>
+            
+            <div class="stats-box">
+                <div class="stats-title">勝率統計</div>
+                <div class="stats-item">
+                    <span class="stats-label">玩家1 (X) 勝率:</span>
+                    <span class="stats-value" id="player1-rate">0%</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">玩家2 (O) 勝率:</span>
+                    <span class="stats-value" id="player2-rate">0%</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">管理員勝率:</span>
+                    <span class="stats-value" id="ai-rate">0%</span>
+                </div>
+                <div class="stats-item">
+                    <span class="stats-label">平局率:</span>
+                    <span class="stats-value" id="tie-rate">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM 元素
+            const board = document.getElementById('board');
+            const cells = document.querySelectorAll('.cell');
+            const status = document.getElementById('status');
+            const resetButton = document.getElementById('reset');
+            const resetStatsButton = document.getElementById('reset-stats');
+            const player1Input = document.getElementById('player1');
+            const player2Input = document.getElementById('player2');
+            const player2InputContainer = document.getElementById('player2-input');
+            const singlePlayerBtn = document.getElementById('single-player-btn');
+            const twoPlayerBtn = document.getElementById('two-player-btn');
+            
+            // 統計元素
+            const player1WinsEl = document.getElementById('player1-wins');
+            const player2WinsEl = document.getElementById('player2-wins');
+            const aiWinsEl = document.getElementById('ai-wins');
+            const tiesEl = document.getElementById('ties');
+            const totalGamesEl = document.getElementById('total-games');
+            const player1RateEl = document.getElementById('player1-rate');
+            const player2RateEl = document.getElementById('player2-rate');
+            const aiRateEl = document.getElementById('ai-rate');
+            const tieRateEl = document.getElementById('tie-rate');
+            
+            // 遊戲狀態
+            let currentPlayer = 'X';
+            let gameState = ['', '', '', '', '', '', '', '', ''];
+            let gameActive = true;
+            let isSinglePlayerMode = true;
+            let player1Name = '參賽者';
+            let player2Name = '管理員';
+            
+            // 統計數據
+            let stats = {
+                player1Wins: 0,
+                player2Wins: 0,
+                aiWins: 0,
+                ties: 0,
+                totalGames: 0
+            };
+            
+            // 勝利條件
+            const winningConditions = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // 橫排
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // 直排
+                [0, 4, 8], [2, 4, 6]             // 對角線
+            ];
+            
+            // 初始化遊戲
+            function initGame() {
+                // 從本地存儲加載統計數據
+                loadStats();
+                
+                // 設置事件監聽器
+                cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+                resetButton.addEventListener('click', resetGame);
+                resetStatsButton.addEventListener('click', resetStats);
+                singlePlayerBtn.addEventListener('click', () => setGameMode(true));
+                twoPlayerBtn.addEventListener('click', () => setGameMode(false));
+                player1Input.addEventListener('input', updatePlayerNames);
+                player2Input.addEventListener('input', updatePlayerNames);
+                
+                // 更新玩家名稱
+                updatePlayerNames();
+            }
+            
+            // 設置遊戲模式 (單人/雙人)
+            function setGameMode(singlePlayer) {
+                isSinglePlayerMode = singlePlayer;
+                singlePlayerBtn.classList.toggle('active', singlePlayer);
+                twoPlayerBtn.classList.toggle('active', !singlePlayer);
+                player2InputContainer.style.display = singlePlayer ? 'none' : 'flex';
+                player2Name = singlePlayer ? '管理員' : (player2Input.value.trim() || '玩家2');
+                updatePlayerNames();
+                resetGame();
+            }
+            
+            // 更新玩家名稱
+            function updatePlayerNames() {
+                player1Name = player1Input.value.trim() || '參賽者';
+                player2Name = isSinglePlayerMode ? '管理員' : (player2Input.value.trim() || '玩家2');
+                
+                if (gameActive) {
+                    status.textContent = `輪到: ${currentPlayer === 'X' ? player1Name : player2Name} (${currentPlayer})`;
+                }
+                updateStats();
+            }
+            
+            // 處理格子點擊
+            function handleCellClick(e) {
+                const clickedCell = e.target;
+                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+                
+                if (gameState[clickedCellIndex] !== '' || !gameActive) {
+                    return;
+                }
+                
+                // 玩家移動
+                makeMove(clickedCellIndex, currentPlayer);
+                
+                // 檢查遊戲結果
+                checkResult();
+                
+                // 如果是單人模式且遊戲繼續，讓AI移動
+                if (isSinglePlayerMode && gameActive && currentPlayer === 'O') {
+                    setTimeout(aiMove, 500); // 添加延遲讓玩家看到自己的移動
+                }
+            }
+            
+            // 執行移動
+            function makeMove(index, player) {
+                gameState[index] = player;
+                const symbol = document.createElement('span');
+                symbol.textContent = player;
+                symbol.className = player === 'X' ? 'x-symbol' : 'o-symbol';
+                cells[index].appendChild(symbol);
+                
+                // 切換玩家
+                currentPlayer = player === 'X' ? 'O' : 'X';
+                status.textContent = `輪到: ${currentPlayer === 'X' ? player1Name : player2Name} (${currentPlayer})`;
+            }
+            
+            // AI移動
+            function aiMove() {
+                if (!gameActive) return;
+                
+                // 簡單AI邏輯: 1.嘗試贏 2.阻止玩家贏 3.隨機移動
+                let move = findWinningMove('O') || findWinningMove('X') || findRandomMove();
+                
+                if (move !== null) {
+                    makeMove(move, 'O');
+                    checkResult();
+                }
+            }
+            
+            // 尋找可以贏的移動
+            function findWinningMove(player) {
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const [a, b, c] = winningConditions[i];
+                    const values = [gameState[a], gameState[b], gameState[c]];
+                    
+                    // 計算空格數和當前玩家的標記數
+                    let emptyCount = 0;
+                    let playerCount = 0;
+                    let emptyIndex = null;
+                    
+                    for (let j = 0; j < values.length; j++) {
+                        if (values[j] === '') {
+                            emptyCount++;
+                            emptyIndex = [a, b, c][j];
+                        } else if (values[j] === player) {
+                            playerCount++;
+                        }
+                    }
+                    
+                    // 如果有兩個標記和一個空格，返回空格位置
+                    if (playerCount === 2 && emptyCount === 1) {
+                        return emptyIndex;
+                    }
+                }
+                return null;
+            }
+            
+            // 尋找隨機移動
+            function findRandomMove() {
+                const emptyCells = [];
+                for (let i = 0; i < gameState.length; i++) {
+                    if (gameState[i] === '') {
+                        emptyCells.push(i);
+                    }
+                }
+                return emptyCells.length > 0 ? emptyCells[Math.floor(Math.random() * emptyCells.length)] : null;
+            }
+            
+            // 檢查遊戲結果
+            function checkResult() {
+                let roundWon = false;
+                
+                // 檢查是否有人贏
+                for (let i = 0; i < winningConditions.length; i++) {
+                    const [a, b, c] = winningConditions[i];
+                    
+                    if (gameState[a] === '' || gameState[b] === '' || gameState[c] === '') {
+                        continue;
+                    }
+                    
+                    if (gameState[a] === gameState[b] && gameState[b] === gameState[c]) {
+                        roundWon = true;
+                        
+                        // 標記獲勝的格子
+                        cells[a].classList.add('winning-cell');
+                        cells[b].classList.add('winning-cell');
+                        cells[c].classList.add('winning-cell');
+                        break;
+                    }
+                }
+                
+                if (roundWon) {
+                    // 有人贏了
+                    const winnerSymbol = currentPlayer === 'X' ? 'O' : 'X';
+                    const winnerName = winnerSymbol === 'X' ? player1Name : player2Name;
+                    
+                    status.textContent = `${winnerName} (${winnerSymbol}) 獲勝！`;
+                    gameActive = false;
+                    
+                    // 更新統計
+                    if (winnerSymbol === 'X') {
+                        stats.player1Wins++;
+                    } else if (isSinglePlayerMode) {
+                        stats.aiWins++;
+                    } else {
+                        stats.player2Wins++;
+                    }
+                    stats.totalGames++;
+                    updateStats();
+                    saveStats();
+                    
+                    return;
+                }
+                
+                // 檢查是否平手
+                if (!gameState.includes('')) {
+                    status.textContent = '比賽平手！';
+                    gameActive = false;
+                    
+                    // 更新統計
+                    stats.ties++;
+                    stats.totalGames++;
+                    updateStats();
+                    saveStats();
+                }
+            }
+            
+            // 重置遊戲
+            function resetGame() {
+                currentPlayer = 'X';
+                gameState = ['', '', '', '', '', '', '', '', ''];
+                gameActive = true;
+                status.textContent = `輪到: ${player1Name} (X)`;
+                
+                cells.forEach(cell => {
+                    cell.innerHTML = '';
+                    cell.classList.remove('winning-cell');
+                });
+            }
+            
+            // 更新統計顯示
+            function updateStats() {
+                player1WinsEl.textContent = stats.player1Wins;
+                player2WinsEl.textContent = stats.player2Wins;
+                aiWinsEl.textContent = stats.aiWins;
+                tiesEl.textContent = stats.ties;
+                totalGamesEl.textContent = stats.totalGames;
+                
+                // 計算勝率
+                const total = stats.totalGames || 1; // 避免除以零
+                player1RateEl.textContent = `${Math.round((stats.player1Wins / total) * 100)}%`;
+                player2RateEl.textContent = `${Math.round((stats.player2Wins / total) * 100)}%`;
+                aiRateEl.textContent = `${Math.round((stats.aiWins / total) * 100)}%`;
+                tieRateEl.textContent = `${Math.round((stats.ties / total) * 100)}%`;
+            }
+            
+            // 重置統計
+            function resetStats() {
+                if (confirm('確定要重置所有統計數據嗎？')) {
+                    stats = {
+                        player1Wins: 0,
+                        player2Wins: 0,
+                        aiWins: 0,
+                        ties: 0,
+                        totalGames: 0
+                    };
+                    updateStats();
+                    localStorage.removeItem('squidGameStats');
+                }
+            }
+            
+            // 保存統計到本地存儲
+            function saveStats() {
+                localStorage.setItem('squidGameStats', JSON.stringify(stats));
+            }
+            
+            // 從本地存儲加載統計
+            function loadStats() {
+                const savedStats = localStorage.getItem('squidGameStats');
+                if (savedStats) {
+                    stats = JSON.parse(savedStats);
+                    updateStats();
+                }
+            }
+            
+            // 初始化遊戲
+            initGame();
+            setGameMode(true); // 默認單人模式
+        });
+    </script>
+</body>
+</html>
