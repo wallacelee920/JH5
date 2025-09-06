@@ -1,413 +1,691 @@
 <!DOCTYPE html>
-<!-- 宣告HTML5文件類型 -->
 <html lang="zh-TW">
-<!-- 設定網頁語言為繁體中文 -->
 <head>
-    <!-- 網頁頭部資訊開始 -->
     <meta charset="UTF-8">
-    <!-- 設定字符編碼為UTF-8，支援繁體中文 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 設定響應式視口，讓網頁在手機上也能正常顯示 -->
     <title>一週待辦事項清單</title>
-    <!-- 網頁標題 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS樣式開始 */
-        
-        /* 定義顏色變量 */
         :root {
-            --primary-color: #4285f4;  /* 主要顏色(藍色) */
-            --completed-color: #34a853; /* 完成任務顏色(綠色) */
-            --delete-color: #ea4335;   /* 刪除按鈕顏色(紅色) */
-            --hover-color: #3367d6;    /* 滑鼠懸停顏色(深藍色) */
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --dark-color: #202124;
+            --light-color: #f8f9fa;
+            --gray-color: #dadce0;
+            --text-color: #333;
+            --text-light: #fff;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
-        
-        /* 整體頁面樣式 */
+
+        .dark-mode {
+            --primary-color: #8ab4f8;
+            --secondary-color: #81c995;
+            --accent-color: #f28b82;
+            --dark-color: #f8f9fa;
+            --light-color: #202124;
+            --gray-color: #5f6368;
+            --text-color: #e8eaed;
+            --text-light: #202124;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 設定字體 */
-            margin: 0;  /* 移除預設邊距 */
-            padding: 20px;  /* 設定內邊距 */
-            background-color: #f8f9fa;  /* 背景淺灰色 */
-            color: #333;  /* 文字深灰色 */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: var(--transition);
+            padding: 20px;
         }
-        
-        /* 主容器樣式 */
+
         .container {
-            max-width: 1200px;  /* 最大寬度限制 */
-            margin: 0 auto;  /* 水平居中 */
-            padding: 20px;  /* 內邊距 */
-            background-color: white;  /* 白色背景 */
-            border-radius: 10px;  /* 圓角 */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* 陰影效果 */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        /* 標題樣式 */
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gray-color);
+        }
+
         h1 {
-            text-align: center;  /* 文字居中 */
-            color: var(--primary-color);  /* 使用主要顏色 */
-            margin-bottom: 30px;  /* 底部間距 */
-            font-weight: 600;  /* 字體粗細 */
+            color: var(--primary-color);
+            font-weight: 700;
         }
-        
-        /* 週導航欄樣式 */
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
         .week-nav {
-            display: flex;  /* 彈性佈局 */
-            justify-content: space-between;  /* 兩端對齊 */
-            align-items: center;  /* 垂直居中 */
-            margin-bottom: 20px;  /* 底部間距 */
-            padding: 10px 0;  /* 上下內邊距 */
-            border-bottom: 1px solid #eee;  /* 底部邊框 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        
-        /* 週標題樣式 */
+
         .week-title {
-            font-size: 1.2rem;  /* 字體大小 */
-            font-weight: 500;  /* 字體粗細 */
+            font-size: 1.2rem;
+            font-weight: 500;
         }
-        
-        /* 導航按鈕樣式 */
-        .nav-btn {
-            background-color: var(--primary-color);  /* 使用主要顏色 */
-            color: white;  /* 文字白色 */
-            border: none;  /* 無邊框 */
-            border-radius: 5px;  /* 圓角 */
-            padding: 8px 15px;  /* 內邊距 */
-            cursor: pointer;  /* 滑鼠指針樣式 */
-            transition: background-color 0.3s;  /* 顏色過渡效果 */
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
-        
-        /* 導航按鈕滑鼠懸停效果 */
-        .nav-btn:hover {
-            background-color: var(--hover-color);  /* 使用懸停顏色 */
+
+        .stat-card {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
         }
-        
-        /* 週網格容器樣式 */
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
         .week-grid {
-            display: grid;  /* 網格佈局 */
-            grid-template-columns: repeat(7, 1fr);  /* 7欄等寬 */
-            gap: 15px;  /* 欄間距 */
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
-        
-        /* 每日欄位樣式 */
+
         .day-column {
-            background-color: #fff;  /* 白色背景 */
-            border-radius: 8px;  /* 圓角 */
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);  /* 陰影效果 */
-            overflow: hidden;  /* 隱藏溢出內容 */
+            background-color: var(--light-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
-        
-        /* 每日標題樣式 */
+
         .day-header {
-            background-color: var(--primary-color);  /* 使用主要顏色 */
-            color: white;  /* 文字白色 */
-            padding: 12px;  /* 內邊距 */
-            text-align: center;  /* 文字居中 */
-            font-weight: 500;  /* 字體粗細 */
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 12px;
+            text-align: center;
+            font-weight: 500;
         }
-        
-        /* 日期顯示樣式 */
+
         .day-date {
-            font-size: 0.8rem;  /* 較小字體 */
-            opacity: 0.8;  /* 半透明效果 */
-            margin-top: 3px;  /* 頂部間距 */
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 3px;
         }
-        
-        /* 任務列表樣式 */
+
         .task-list {
-            padding: 10px;  /* 內邊距 */
-            min-height: 150px;  /* 最小高度 */
+            padding: 10px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
         }
-        
-        /* 單個任務項目樣式 */
+
         .task-item {
-            display: flex;  /* 彈性佈局 */
-            align-items: center;  /* 垂直居中 */
-            padding: 8px;  /* 內邊距 */
-            margin-bottom: 8px;  /* 底部間距 */
-            background-color: #f8f9fa;  /* 淺灰色背景 */
-            border-radius: 5px;  /* 圓角 */
-            transition: all 0.2s;  /* 過渡效果 */
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: var(--light-color);
+            border: 1px solid var(--gray-color);
+            border-radius: 5px;
+            transition: var(--transition);
         }
-        
-        /* 任務項目滑鼠懸停效果 */
+
         .task-item:hover {
-            transform: translateY(-2px);  /* 輕微上移 */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  /* 陰影效果 */
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
-        
-        /* 任務核取方塊樣式 */
+
         .task-checkbox {
-            margin-right: 10px;  /* 右邊距 */
-            cursor: pointer;  /* 滑鼠指針樣式 */
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
         }
-        
-        /* 任務文字樣式 */
+
+        .task-content {
+            flex-grow: 1;
+        }
+
         .task-text {
-            flex-grow: 1;  /* 佔滿剩餘空間 */
-            font-size: 0.95rem;  /* 字體大小 */
+            font-size: 0.95rem;
+            word-break: break-word;
         }
-        
-        /* 已完成任務文字樣式 */
+
         .task-completed {
-            text-decoration: line-through;  /* 刪除線 */
-            color: #888;  /* 灰色文字 */
+            text-decoration: line-through;
+            color: var(--gray-color);
         }
-        
-        /* 任務操作按鈕容器樣式 */
+
+        .task-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .task-tag {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            background-color: var(--gray-color);
+        }
+
+        .tag-work { background-color: #ffebee; color: #c62828; }
+        .tag-personal { background-color: #e8f5e9; color: #2e7d32; }
+        .tag-urgent { background-color: #fff8e1; color: #f57f17; }
+
         .task-actions {
-            display: flex;  /* 彈性佈局 */
-            gap: 5px;  /* 按鈕間距 */
+            display: flex;
+            gap: 5px;
         }
-        
-        /* 任務操作按鈕基礎樣式 */
+
         .task-btn {
-            background: none;  /* 無背景 */
-            border: none;  /* 無邊框 */
-            cursor: pointer;  /* 滑鼠指針樣式 */
-            font-size: 0.9rem;  /* 字體大小 */
-            padding: 2px;  /* 內邊距 */
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            transition: var(--transition);
         }
-        
-        /* 完成按鈕樣式 */
-        .complete-btn {
-            color: var(--completed-color);  /* 使用完成顏色 */
+
+        .task-btn:hover {
+            color: var(--primary-color);
         }
-        
-        /* 刪除按鈕樣式 */
-        .delete-btn {
-            color: var(--delete-color);  /* 使用刪除顏色 */
-        }
-        
-        /* 添加任務區域樣式 */
+
         .add-task {
-            display: flex;  /* 彈性佈局 */
-            margin-top: 10px;  /* 頂部間距 */
-            padding: 0 10px 10px;  /* 內邊距 */
+            display: flex;
+            margin-top: 10px;
+            padding: 0 10px 10px;
         }
-        
-        /* 任務輸入框樣式 */
+
         .task-input {
-            flex-grow: 1;  /* 佔滿剩餘空間 */
-            padding: 8px;  /* 內邊距 */
-            border: 1px solid #ddd;  /* 邊框 */
-            border-radius: 5px;  /* 圓角 */
-            margin-right: 5px;  /* 右邊距 */
-            font-size: 0.9rem;  /* 字體大小 */
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid var(--gray-color);
+            border-radius: 5px;
+            margin-right: 5px;
+            font-size: 0.9rem;
+            background-color: var(--light-color);
+            color: var(--text-color);
         }
-        
-        /* 添加按鈕樣式 */
+
         .add-btn {
-            background-color: var(--primary-color);  /* 使用主要顏色 */
-            color: white;  /* 文字白色 */
-            border: none;  /* 無邊框 */
-            border-radius: 5px;  /* 圓角 */
-            padding: 8px 12px;  /* 內邊距 */
-            cursor: pointer;  /* 滑鼠指針樣式 */
-            transition: background-color 0.3s;  /* 顏色過渡效果 */
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: var(--transition);
         }
-        
-        /* 添加按鈕滑鼠懸停效果 */
+
         .add-btn:hover {
-            background-color: var(--hover-color);  /* 使用懸停顏色 */
+            opacity: 0.9;
         }
-        
-        /* 空白狀態提示樣式 */
+
         .empty-state {
-            text-align: center;  /* 文字居中 */
-            color: #888;  /* 灰色文字 */
-            font-size: 0.9rem;  /* 字體大小 */
-            padding: 20px 0;  /* 內邊距 */
+            text-align: center;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            padding: 20px 0;
         }
-        
-        /* 響應式設計 - 中等屏幕(900px以下) */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: var(--light-color);
+            color: var(--text-color);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border: 1px solid var(--gray-color);
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: var(--light-color);
+            color: var(--text-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        /* 響應式設計 */
         @media (max-width: 900px) {
             .week-grid {
-                grid-template-columns: repeat(4, 1fr);  /* 4欄等寬 */
+                grid-template-columns: repeat(4, 1fr);
             }
         }
-        
-        /* 響應式設計 - 小屏幕(600px以下) */
+
         @media (max-width: 600px) {
             .week-grid {
-                grid-template-columns: repeat(2, 1fr);  /* 2欄等寬 */
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .controls {
+                width: 100%;
+                justify-content: space-between;
             }
         }
-        
-        /* 響應式設計 - 超小屏幕(400px以下) */
+
         @media (max-width: 400px) {
             .week-grid {
-                grid-template-columns: 1fr;  /* 1欄 */
+                grid-template-columns: 1fr;
             }
         }
     </style>
-    <!-- CSS樣式結束 -->
 </head>
-<!-- 網頁頭部資訊結束 -->
 <body>
-    <!-- 網頁主體開始 -->
     <div class="container">
-        <!-- 主容器開始 -->
-        <h1>一週待辦事項清單</h1>
-        <!-- 主標題 -->
-        
+        <header>
+            <h1><i class="fas fa-tasks"></i> 一週待辦事項清單</h1>
+            <div class="controls">
+                <button class="btn" id="addTaskBtn"><i class="fas fa-plus"></i> 新增任務</button>
+                <button class="btn btn-outline" id="darkModeToggle"><i class="fas fa-moon"></i> 深色模式</button>
+                <button class="btn btn-secondary" id="exportBtn"><i class="fas fa-download"></i> 導出</button>
+                <button class="btn btn-accent" id="clearBtn"><i class="fas fa-trash"></i> 清除全部</button>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="搜尋任務...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTasks">0</div>
+                <div class="stat-label">總任務數</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedTasks">0</div>
+                <div class="stat-label">已完成</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingTasks">0</div>
+                <div class="stat-label">待完成</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="urgentTasks">0</div>
+                <div class="stat-label">緊急任務</div>
+            </div>
+        </div>
+
         <div class="week-nav">
-            <!-- 週導航欄開始 -->
-            <button class="nav-btn" id="prevWeek">上一週</button>
-            <!-- 上一週按鈕 -->
+            <button class="btn btn-outline" id="prevWeek"><i class="fas fa-chevron-left"></i> 上一週</button>
             <div class="week-title" id="weekTitle"></div>
-            <!-- 週標題顯示區域 -->
-            <button class="nav-btn" id="nextWeek">下一週</button>
-            <!-- 下一週按鈕 -->
+            <button class="btn btn-outline" id="nextWeek">下一週 <i class="fas fa-chevron-right"></i></button>
         </div>
-        <!-- 週導航欄結束 -->
-        
+
         <div class="week-grid" id="weekGrid">
-            <!-- 週網格容器開始 -->
-            <!-- 每天的內容將通過JavaScript動態生成 -->
+            <!-- 動態生成 -->
         </div>
-        <!-- 週網格容器結束 -->
     </div>
-    <!-- 主容器結束 -->
+
+    <!-- 新增任務模態框 -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">新增任務</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                <div class="form-group">
+                    <label for="taskTitle" class="form-label">任務標題</label>
+                    <input type="text" id="taskTitle" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription" class="form-label">任務描述</label>
+                    <textarea id="taskDescription" class="form-textarea"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskDate" class="form-label">選擇日期</label>
+                    <input type="date" id="taskDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskTag" class="form-label">任務標籤</label>
+                    <select id="taskTag" class="form-select">
+                        <option value="">無標籤</option>
+                        <option value="work">工作</option>
+                        <option value="personal">個人</option>
+                        <option value="urgent">緊急</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-accent" id="cancelTask">取消</button>
+                    <button type="submit" class="btn">儲存任務</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
-        // JavaScript代碼開始
-        // 當DOM內容加載完成後執行
         document.addEventListener('DOMContentLoaded', function() {
-            // 獲取DOM元素
-            const weekGrid = document.getElementById('weekGrid');  // 週網格容器
-            const weekTitle = document.getElementById('weekTitle');  // 週標題
-            const prevWeekBtn = document.getElementById('prevWeek');  // 上一週按鈕
-            const nextWeekBtn = document.getElementById('nextWeek');  // 下一週按鈕
+            // DOM元素
+            const weekGrid = document.getElementById('weekGrid');
+            const weekTitle = document.getElementById('weekTitle');
+            const prevWeekBtn = document.getElementById('prevWeek');
+            const nextWeekBtn = document.getElementById('nextWeek');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskModal = document.getElementById('taskModal');
+            const taskForm = document.getElementById('taskForm');
+            const modalTitle = document.getElementById('modalTitle');
+            const taskId = document.getElementById('taskId');
+            const cancelTask = document.getElementById('cancelTask');
+            const closeModal = document.querySelector('.close-modal');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const exportBtn = document.getElementById('exportBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const searchInput = document.getElementById('searchInput');
             
-            // 獲取當前週的開始日期（週一）
+            // 統計元素
+            const totalTasksEl = document.getElementById('totalTasks');
+            const completedTasksEl = document.getElementById('completedTasks');
+            const pendingTasksEl = document.getElementById('pendingTasks');
+            const urgentTasksEl = document.getElementById('urgentTasks');
+            
+            // 當前週開始日期（週一）
             let currentWeekStart = getMonday(new Date());
+            let editingTask = null;
             
-            // 初始渲染本週
+            // 初始化
             renderWeek(currentWeekStart);
+            updateStats();
             
-            // 上一週按鈕點擊事件
+            // 事件監聽
             prevWeekBtn.addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() - 7);  // 日期減7天
-                renderWeek(currentWeekStart);  // 重新渲染
+                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+                renderWeek(currentWeekStart);
             });
             
-            // 下一週按鈕點擊事件
             nextWeekBtn.addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() + 7);  // 日期加7天
-                renderWeek(currentWeekStart);  // 重新渲染
+                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                renderWeek(currentWeekStart);
             });
             
-            // 獲取某週的週一日期
-            function getMonday(date) {
-                const d = new Date(date);  // 創建新日期對象
-                const day = d.getDay();  // 獲取星期幾(0-6, 0是週日)
-                // 計算與週一的差值（如果是週日則減6天，否則減(day-1)天）
-                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-                return new Date(d.setDate(diff));  // 返回週一日期
+            addTaskBtn.addEventListener('click', function() {
+                editingTask = null;
+                taskId.value = '';
+                modalTitle.textContent = '新增任務';
+                taskForm.reset();
+                // 設置默認日期為今天
+                document.getElementById('taskDate').valueAsDate = new Date();
+                taskModal.style.display = 'flex';
+            });
+            
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveTask();
+            });
+            
+            cancelTask.addEventListener('click', closeTaskModal);
+            closeModal.addEventListener('click', closeTaskModal);
+            
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                darkModeToggle.innerHTML = isDarkMode ? 
+                    '<i class="fas fa-sun"></i> 淺色模式' : 
+                    '<i class="fas fa-moon"></i> 深色模式';
+                localStorage.setItem('darkMode', isDarkMode);
+            });
+            
+            exportBtn.addEventListener('click', exportData);
+            clearBtn.addEventListener('click', clearAllTasks);
+            
+            searchInput.addEventListener('input', function() {
+                renderWeek(currentWeekStart, this.value);
+            });
+            
+            // 檢查是否啟用深色模式
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> 淺色模式';
             }
             
-            // 格式化日期顯示
+            // 獲取週一的日期
+            function getMonday(date) {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+                return new Date(d.setDate(diff));
+            }
+            
+            // 格式化日期
             function formatDate(date) {
-                const options = { month: 'short', day: 'numeric' };  // 格式選項(簡寫月份+日)
-                return date.toLocaleDateString('zh-TW', options);  // 轉為本地化日期字符串
+                return date.toLocaleDateString('zh-TW', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
             }
             
             // 獲取日期鍵（用於存儲）
             function getDateKey(date) {
-                return date.toISOString().split('T')[0];  // 轉為ISO格式並取日期部分
+                return date.toISOString().split('T')[0];
             }
             
             // 從本地存儲獲取任務
             function getTasks() {
-                // 從localStorage獲取或返回空對象
                 return JSON.parse(localStorage.getItem('weeklyTasks')) || {};
             }
             
             // 保存任務到本地存儲
             function saveTasks(tasks) {
-                localStorage.setItem('weeklyTasks', JSON.stringify(tasks));  // 轉為JSON字符串存儲
+                localStorage.setItem('weeklyTasks', JSON.stringify(tasks));
             }
             
             // 渲染整週
-            function renderWeek(startDate) {
-                // 設置週標題
-                const endDate = new Date(startDate);  // 創建結束日期對象
-                endDate.setDate(endDate.getDate() + 6);  // 加6天得到週日
-                // 顯示日期範圍
+            function renderWeek(startDate, searchTerm = '') {
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 6);
                 weekTitle.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
                 
-                // 清空週網格
                 weekGrid.innerHTML = '';
                 
-                // 創建每天的列
+                const dayNames = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+                const tasks = getTasks();
+                
                 for (let i = 0; i < 7; i++) {
-                    const currentDate = new Date(startDate);  // 創建當前日期對象
-                    currentDate.setDate(currentDate.getDate() + i);  // 計算每天的日期
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(currentDate.getDate() + i);
                     
-                    const dayKey = getDateKey(currentDate);  // 獲取日期鍵
-                    const tasks = getTasks();  // 獲取所有任務
-                    const dayTasks = tasks[dayKey] || [];  // 獲取當天任務或空數組
+                    const dayKey = getDateKey(currentDate);
+                    const dayTasks = tasks[dayKey] || [];
                     
-                    // 星期名稱數組
-                    const dayNames = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+                    // 過濾任務（如果有搜尋詞）
+                    const filteredTasks = searchTerm ? 
+                        dayTasks.filter(task => 
+                            task.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()))
+                        ) : dayTasks;
                     
-                    // 創建每日列元素
                     const dayColumn = document.createElement('div');
                     dayColumn.className = 'day-column';
                     
-                    // 創建每日標題
                     const dayHeader = document.createElement('div');
                     dayHeader.className = 'day-header';
                     dayHeader.innerHTML = `
-                        ${dayNames[i]}  <!-- 星期名稱 -->
-                        <div class="day-date">${formatDate(currentDate)}</div>  <!-- 格式化日期 -->
+                        ${dayNames[i]}
+                        <div class="day-date">${formatDate(currentDate)}</div>
                     `;
                     
-                    // 創建任務列表容器
                     const taskList = document.createElement('div');
                     taskList.className = 'task-list';
                     
-                    // 如果沒有任務，顯示空白狀態提示
-                    if (dayTasks.length === 0) {
+                    if (filteredTasks.length === 0) {
                         const emptyState = document.createElement('div');
                         emptyState.className = 'empty-state';
-                        emptyState.textContent = '暫無任務';
+                        emptyState.textContent = searchTerm ? '沒有符合的任務' : '暫無任務';
                         taskList.appendChild(emptyState);
                     } else {
-                        // 添加所有任務到列表
-                        dayTasks.forEach((task, index) => {
-                            const taskItem = createTaskItem(dayKey, index, task.text, task.completed);
+                        filteredTasks.forEach((task, index) => {
+                            const taskItem = createTaskItem(dayKey, index, task);
                             taskList.appendChild(taskItem);
                         });
                     }
                     
-                    // 創建添加任務區域
                     const addTaskContainer = document.createElement('div');
                     addTaskContainer.className = 'add-task';
                     
-                    // 創建任務輸入框
                     const taskInput = document.createElement('input');
                     taskInput.className = 'task-input';
                     taskInput.type = 'text';
-                    taskInput.placeholder = '添加任務...';
+                    taskInput.placeholder = '快速新增任務...';
                     
-                    // 創建添加按鈕
                     const addBtn = document.createElement('button');
                     addBtn.className = 'add-btn';
-                    addBtn.textContent = '添加';
+                    addBtn.innerHTML = '<i class="fas fa-plus"></i>';
                     
-                    // 添加按鈕點擊事件
                     addBtn.addEventListener('click', function() {
-                        addTask(dayKey, taskInput);  // 調用添加任務函數
+                        addQuickTask(dayKey, taskInput);
                     });
                     
-                    // 輸入框回車鍵事件
                     taskInput.addEventListener('keypress', function(e) {
                         if (e.key === 'Enter') {
-                            addTask(dayKey, taskInput);  // 回車鍵也添加任務
+                            addQuickTask(dayKey, taskInput);
                         }
                     });
                     
-                    // 將元素添加到DOM
                     addTaskContainer.appendChild(taskInput);
                     addTaskContainer.appendChild(addBtn);
                     
@@ -417,98 +695,250 @@
                     
                     weekGrid.appendChild(dayColumn);
                 }
+                
+                updateStats();
             }
             
-            // 添加任務函數
-            function addTask(dayKey, inputElement) {
-                const taskText = inputElement.value.trim();  // 獲取並清理輸入內容
-                if (taskText) {  // 如果有內容
-                    const tasks = getTasks();  // 獲取所有任務
+            // 創建任務項目
+            function createTaskItem(dayKey, index, task) {
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                taskItem.draggable = true;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'task-checkbox';
+                checkbox.checked = task.completed;
+                
+                const taskContent = document.createElement('div');
+                taskContent.className = 'task-content';
+                
+                const taskText = document.createElement('div');
+                taskText.className = 'task-text' + (task.completed ? ' task-completed' : '');
+                taskText.textContent = task.text;
+                
+                taskContent.appendChild(taskText);
+                
+                // 添加標籤（如果有的話）
+                if (task.tag) {
+                    const taskTags = document.createElement('div');
+                    taskTags.className = 'task-tags';
                     
-                    // 如果該日期還沒有任務數組，創建一個
+                    const tag = document.createElement('span');
+                    tag.className = `task-tag tag-${task.tag}`;
+                    
+                    switch(task.tag) {
+                        case 'work':
+                            tag.textContent = '工作';
+                            break;
+                        case 'personal':
+                            tag.textContent = '個人';
+                            break;
+                        case 'urgent':
+                            tag.textContent = '緊急';
+                            break;
+                    }
+                    
+                    taskTags.appendChild(tag);
+                    taskContent.appendChild(taskTags);
+                }
+                
+                const taskActions = document.createElement('div');
+                taskActions.className = 'task-actions';
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = 'task-btn';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'task-btn';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                
+                // 切換任務完成狀態
+                checkbox.addEventListener('change', function() {
+                    const tasks = getTasks();
+                    tasks[dayKey][index].completed = this.checked;
+                    saveTasks(tasks);
+                    renderWeek(currentWeekStart, searchInput.value);
+                });
+                
+                // 編輯任務
+                editBtn.addEventListener('click', function() {
+                    editingTask = { dayKey, index };
+                    const tasks = getTasks();
+                    const task = tasks[dayKey][index];
+                    
+                    taskId.value = `${dayKey}-${index}`;
+                    modalTitle.textContent = '編輯任務';
+                    document.getElementById('taskTitle').value = task.text;
+                    document.getElementById('taskDescription').value = task.description || '';
+                    document.getElementById('taskDate').value = dayKey;
+                    document.getElementById('taskTag').value = task.tag || '';
+                    
+                    taskModal.style.display = 'flex';
+                });
+                
+                // 刪除任務
+                deleteBtn.addEventListener('click', function() {
+                    if (confirm('確定要刪除這個任務嗎？')) {
+                        const tasks = getTasks();
+                        tasks[dayKey].splice(index, 1);
+                        saveTasks(tasks);
+                        renderWeek(currentWeekStart, searchInput.value);
+                    }
+                });
+                
+                // 拖放功能
+                taskItem.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', `${dayKey},${index}`);
+                });
+                
+                taskItem.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                });
+                
+                taskItem.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    const [sourceDayKey, sourceIndex] = e.dataTransfer.getData('text/plain').split(',');
+                    const targetDayKey = dayKey;
+                    
+                    if (sourceDayKey !== targetDayKey) {
+                        moveTask(sourceDayKey, parseInt(sourceIndex), targetDayKey);
+                    }
+                });
+                
+                taskActions.appendChild(editBtn);
+                taskActions.appendChild(deleteBtn);
+                
+                taskItem.appendChild(checkbox);
+                taskItem.appendChild(taskContent);
+                taskItem.appendChild(taskActions);
+                
+                return taskItem;
+            }
+            
+            // 快速新增任務
+            function addQuickTask(dayKey, inputElement) {
+                const taskText = inputElement.value.trim();
+                if (taskText) {
+                    const tasks = getTasks();
+                    
                     if (!tasks[dayKey]) {
                         tasks[dayKey] = [];
                     }
                     
-                    // 添加新任務到數組
                     tasks[dayKey].push({
-                        text: taskText,  // 任務文字
-                        completed: false  // 默認未完成
+                        text: taskText,
+                        completed: false
                     });
                     
-                    saveTasks(tasks);  // 保存到本地存儲
-                    renderWeek(currentWeekStart);  // 重新渲染
-                    inputElement.value = '';  // 清空輸入框
+                    saveTasks(tasks);
+                    renderWeek(currentWeekStart, searchInput.value);
+                    inputElement.value = '';
                 }
             }
             
-            // 創建任務項函數
-            function createTaskItem(dayKey, index, text, completed) {
-                // 創建任務項容器
-                const taskItem = document.createElement('div');
-                taskItem.className = 'task-item';
+            // 保存任務（表單提交）
+            function saveTask() {
+                const title = document.getElementById('taskTitle').value.trim();
+                const description = document.getElementById('taskDescription').value.trim();
+                const date = document.getElementById('taskDate').value;
+                const tag = document.getElementById('taskTag').value;
                 
-                // 創建核取方塊
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'task-checkbox';
-                checkbox.checked = completed;
+                if (!title) return;
                 
-                // 創建任務文字
-                const taskText = document.createElement('span');
-                taskText.className = 'task-text' + (completed ? ' task-completed' : '');
-                taskText.textContent = text;
+                const tasks = getTasks();
+                const dayKey = date;
                 
-                // 創建任務操作按鈕容器
-                const taskActions = document.createElement('div');
-                taskActions.className = 'task-actions';
-                
-                // 創建完成按鈕
-                const completeBtn = document.createElement('button');
-                completeBtn.className = 'task-btn complete-btn';
-                completeBtn.innerHTML = '✓';
-                
-                // 創建刪除按鈕
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'task-btn delete-btn';
-                deleteBtn.innerHTML = '✕';
-                
-                // 切換任務完成狀態函數
-                function toggleComplete() {
-                    const tasks = getTasks();  // 獲取所有任務
-                    // 切換完成狀態
-                    tasks[dayKey][index].completed = !tasks[dayKey][index].completed;
-                    saveTasks(tasks);  // 保存
-                    taskText.classList.toggle('task-completed');  // 切換樣式
-                    checkbox.checked = tasks[dayKey][index].completed;  // 更新核取方塊
+                if (!tasks[dayKey]) {
+                    tasks[dayKey] = [];
                 }
                 
-                // 綁定事件
-                checkbox.addEventListener('change', toggleComplete);
-                completeBtn.addEventListener('click', toggleComplete);
+                if (editingTask) {
+                    // 編輯現有任務
+                    tasks[editingTask.dayKey][editingTask.index] = {
+                        text: title,
+                        description: description,
+                        completed: tasks[editingTask.dayKey][editingTask.index].completed,
+                        tag: tag
+                    };
+                } else {
+                    // 新增任務
+                    tasks[dayKey].push({
+                        text: title,
+                        description: description,
+                        completed: false,
+                        tag: tag
+                    });
+                }
                 
-                // 刪除任務
-                deleteBtn.addEventListener('click', function() {
-                    const tasks = getTasks();  // 獲取所有任務
-                    tasks[dayKey].splice(index, 1);  // 從數組中刪除
-                    saveTasks(tasks);  // 保存
-                    renderWeek(currentWeekStart);  // 重新渲染
+                saveTasks(tasks);
+                closeTaskModal();
+                renderWeek(currentWeekStart, searchInput.value);
+            }
+            
+            // 移動任務（拖放）
+            function moveTask(sourceDayKey, sourceIndex, targetDayKey) {
+                const tasks = getTasks();
+                
+                if (!tasks[targetDayKey]) {
+                    tasks[targetDayKey] = [];
+                }
+                
+                const task = tasks[sourceDayKey][sourceIndex];
+                tasks[targetDayKey].push(task);
+                tasks[sourceDayKey].splice(sourceIndex, 1);
+                
+                saveTasks(tasks);
+                renderWeek(currentWeekStart, searchInput.value);
+            }
+            
+            // 更新統計數據
+            function updateStats() {
+                const tasks = getTasks();
+                let total = 0;
+                let completed = 0;
+                let urgent = 0;
+                
+                Object.values(tasks).forEach(dayTasks => {
+                    total += dayTasks.length;
+                    completed += dayTasks.filter(task => task.completed).length;
+                    urgent += dayTasks.filter(task => task.tag === 'urgent').length;
                 });
                 
-                // 將元素添加到DOM
-                taskActions.appendChild(completeBtn);
-                taskActions.appendChild(deleteBtn);
+                totalTasksEl.textContent = total;
+                completedTasksEl.textContent = completed;
+                pendingTasksEl.textContent = total - completed;
+                urgentTasksEl.textContent = urgent;
+            }
+            
+            // 導出數據
+            function exportData() {
+                const tasks = getTasks();
+                const dataStr = JSON.stringify(tasks);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
                 
-                taskItem.appendChild(checkbox);
-                taskItem.appendChild(taskText);
-                taskItem.appendChild(taskActions);
+                const exportFileDefaultName = `tasks-${new Date().toISOString().split('T')[0]}.json`;
                 
-                return taskItem;  // 返回創建的任務項
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+            
+            // 清除所有任務
+            function clearAllTasks() {
+                if (confirm('確定要清除所有任務嗎？此操作無法復原。')) {
+                    localStorage.removeItem('weeklyTasks');
+                    renderWeek(currentWeekStart);
+                }
+            }
+            
+            // 關閉模態框
+            function closeTaskModal() {
+                taskModal.style.display = 'none';
             }
         });
     </script>
-    <!-- JavaScript代碼結束 -->
 </body>
-<!-- 網頁主體結束 -->
 </html>
-<!-- HTML結束 -->
