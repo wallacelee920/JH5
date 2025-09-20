@@ -3,941 +3,476 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>一週待辦事項清單</title>
+    <title>待辦事項應用程式</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #4285f4;
-            --secondary-color: #34a853;
-            --accent-color: #ea4335;
-            --dark-color: #202124;
-            --light-color: #f8f9fa;
-            --gray-color: #dadce0;
-            --text-color: #333;
-            --text-light: #fff;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
-        .dark-mode {
-            --primary-color: #8ab4f8;
-            --secondary-color: #81c995;
-            --accent-color: #f28b82;
-            --dark-color: #f8f9fa;
-            --light-color: #202124;
-            --gray-color: #5f6368;
-            --text-color: #e8eaed;
-            --text-light: #202124;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-
-        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: var(--transition);
-            padding: 20px;
         }
-
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: #333;
+        }
+        
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--gray-color);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .week-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .week-title {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        .stats {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background-color: var(--light-color);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: var(--shadow);
-            flex: 1;
-            min-width: 150px;
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .day-column {
-            background-color: var(--light-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
-
-        .day-header {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            padding: 12px;
+        
+        .header {
+            background: #4a6fc7;
+            color: white;
+            padding: 25px;
             text-align: center;
-            font-weight: 500;
         }
-
-        .day-date {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            margin-top: 3px;
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-
-        .task-list {
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            background: #3b5aac;
             padding: 10px;
-            min-height: 200px;
-            max-height: 300px;
+            border-radius: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .input-section {
+            padding: 20px;
+            background: #f5f7ff;
+            display: flex;
+            gap: 10px;
+        }
+        
+        #task-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        #task-input:focus {
+            outline: none;
+            border-color: #4a6fc7;
+        }
+        
+        #add-btn {
+            background: #4a6fc7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 24px;
+        }
+        
+        #add-btn:hover {
+            background: #3b5aac;
+        }
+        
+        .filters {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: #eef1fc;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .filter-btn {
+            background: none;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #4a6fc7;
+            color: white;
+        }
+        
+        .tasks-section {
+            padding: 20px;
+            max-height: 400px;
             overflow-y: auto;
         }
-
+        
+        .task-list {
+            list-style: none;
+        }
+        
         .task-item {
             display: flex;
             align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: var(--light-color);
-            border: 1px solid var(--gray-color);
-            border-radius: 5px;
-            transition: var(--transition);
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f9fafd;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s;
+            transition: transform 0.3s;
+            border-left: 4px solid #4a6fc7;
         }
-
+        
         .task-item:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
+        
+        .task-item.completed {
+            border-left-color: #38c172;
+            opacity: 0.8;
+        }
+        
         .task-checkbox {
-            margin-right: 10px;
+            margin-right: 15px;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
-            width: 18px;
-            height: 18px;
         }
-
-        .task-content {
-            flex-grow: 1;
-        }
-
+        
         .task-text {
-            font-size: 0.95rem;
+            flex: 1;
+            font-size: 16px;
             word-break: break-word;
         }
-
-        .task-completed {
+        
+        .task-item.completed .task-text {
             text-decoration: line-through;
-            color: var(--gray-color);
+            color: #888;
         }
-
-        .task-tags {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-        }
-
-        .task-tag {
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-            background-color: var(--gray-color);
-        }
-
-        .tag-work { background-color: #ffebee; color: #c62828; }
-        .tag-personal { background-color: #e8f5e9; color: #2e7d32; }
-        .tag-urgent { background-color: #fff8e1; color: #f57f17; }
-
+        
         .task-actions {
             display: flex;
-            gap: 5px;
+            gap: 10px;
         }
-
-        .task-btn {
+        
+        .task-actions button {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 0.9rem;
-            color: var(--gray-color);
-            transition: var(--transition);
-        }
-
-        .task-btn:hover {
-            color: var(--primary-color);
-        }
-
-        .add-task {
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: flex;
-            margin-top: 10px;
-            padding: 0 10px 10px;
+            align-items: center;
+            justify-content: center;
         }
-
-        .task-input {
-            flex-grow: 1;
+        
+        .edit-btn:hover {
+            color: #4a6fc7;
+            background: #e6eeff;
+        }
+        
+        .delete-btn:hover {
+            color: #e74c3c;
+            background: #ffe6e6;
+        }
+        
+        .edit-input {
+            flex: 1;
             padding: 10px;
-            border: 1px solid var(--gray-color);
-            border-radius: 5px;
-            margin-right: 5px;
-            font-size: 0.9rem;
-            background-color: var(--light-color);
-            color: var(--text-color);
+            border: 2px solid #4a6fc7;
+            border-radius: 6px;
+            font-size: 16px;
         }
-
-        .add-btn {
-            background-color: var(--primary-color);
-            color: var(--text-light);
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .add-btn:hover {
-            opacity: 0.9;
-        }
-
+        
         .empty-state {
             text-align: center;
-            color: var(--gray-color);
-            font-size: 0.9rem;
-            padding: 20px 0;
+            padding: 40px 20px;
+            color: #888;
         }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--light-color);
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gray-color);
-        }
-
-        .form-group {
+        
+        .empty-state i {
+            font-size: 50px;
             margin-bottom: 15px;
+            color: #ccc;
         }
-
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+        
+        .empty-state p {
+            font-size: 18px;
         }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--gray-color);
-            border-radius: 5px;
-            font-size: 0.9rem;
-            background-color: var(--light-color);
-            color: var(--text-color);
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border: 1px solid var(--gray-color);
-            border-radius: 5px;
-            font-size: 0.9rem;
-            background-color: var(--light-color);
-            color: var(--text-color);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-color);
-        }
-
-        /* 響應式設計 */
-        @media (max-width: 900px) {
-            .week-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .week-grid {
-                grid-template-columns: repeat(2, 1fr);
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 22px;
             }
             
-            .stats {
+            .input-section {
                 flex-direction: column;
             }
             
-            header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
+            #add-btn {
+                padding: 12px;
             }
             
-            .controls {
-                width: 100%;
-                justify-content: space-between;
+            .filters {
+                flex-wrap: wrap;
+                gap: 5px;
             }
-        }
-
-        @media (max-width: 400px) {
-            .week-grid {
-                grid-template-columns: 1fr;
+            
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-tasks"></i> 一週待辦事項清單</h1>
-            <div class="controls">
-                <button class="btn" id="addTaskBtn"><i class="fas fa-plus"></i> 新增任務</button>
-                <button class="btn btn-outline" id="darkModeToggle"><i class="fas fa-moon"></i> 深色模式</button>
-                <button class="btn btn-secondary" id="exportBtn"><i class="fas fa-download"></i> 導出</button>
-                <button class="btn btn-accent" id="clearBtn"><i class="fas fa-trash"></i> 清除全部</button>
-            </div>
-        </header>
-
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="搜尋任務...">
-            <i class="fas fa-search search-icon"></i>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalTasks">0</div>
-                <div class="stat-label">總任務數</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="completedTasks">0</div>
-                <div class="stat-label">已完成</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="pendingTasks">0</div>
-                <div class="stat-label">待完成</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="urgentTasks">0</div>
-                <div class="stat-label">緊急任務</div>
+        <div class="header">
+            <h1><i class="fas fa-tasks"></i> 待辦事項清單</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-tasks">0</div>
+                    <div class="stat-label">總任務</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completed-tasks">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="pending-tasks">0</div>
+                    <div class="stat-label">待完成</div>
+                </div>
             </div>
         </div>
-
-        <div class="week-nav">
-            <button class="btn btn-outline" id="prevWeek"><i class="fas fa-chevron-left"></i> 上一週</button>
-            <div class="week-title" id="weekTitle"></div>
-            <button class="btn btn-outline" id="nextWeek">下一週 <i class="fas fa-chevron-right"></i></button>
+        
+        <div class="input-section">
+            <input type="text" id="task-input" placeholder="輸入新的待辦事項...">
+            <button id="add-btn"><i class="fas fa-plus"></i></button>
         </div>
-
-        <div class="week-grid" id="weekGrid">
-            <!-- 動態生成 -->
+        
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">全部</button>
+            <button class="filter-btn" data-filter="pending">待完成</button>
+            <button class="filter-btn" data-filter="completed">已完成</button>
         </div>
-    </div>
-
-    <!-- 新增任務模態框 -->
-    <div class="modal" id="taskModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">新增任務</h2>
-                <button class="close-modal">&times;</button>
-            </div>
-            <form id="taskForm">
-                <input type="hidden" id="taskId">
-                <div class="form-group">
-                    <label for="taskTitle" class="form-label">任務標題</label>
-                    <input type="text" id="taskTitle" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="taskDescription" class="form-label">任務描述</label>
-                    <textarea id="taskDescription" class="form-textarea"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="taskDate" class="form-label">選擇日期</label>
-                    <input type="date" id="taskDate" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label for="taskTag" class="form-label">任務標籤</label>
-                    <select id="taskTag" class="form-select">
-                        <option value="">無標籤</option>
-                        <option value="work">工作</option>
-                        <option value="personal">個人</option>
-                        <option value="urgent">緊急</option>
-                    </select>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-accent" id="cancelTask">取消</button>
-                    <button type="submit" class="btn">儲存任務</button>
-                </div>
-            </form>
+        
+        <div class="tasks-section">
+            <ul class="task-list" id="task-list">
+                <!-- 任務將動態添加到這裡 -->
+            </ul>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // DOM元素
-            const weekGrid = document.getElementById('weekGrid');
-            const weekTitle = document.getElementById('weekTitle');
-            const prevWeekBtn = document.getElementById('prevWeek');
-            const nextWeekBtn = document.getElementById('nextWeek');
-            const addTaskBtn = document.getElementById('addTaskBtn');
-            const taskModal = document.getElementById('taskModal');
-            const taskForm = document.getElementById('taskForm');
-            const modalTitle = document.getElementById('modalTitle');
-            const taskId = document.getElementById('taskId');
-            const cancelTask = document.getElementById('cancelTask');
-            const closeModal = document.querySelector('.close-modal');
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const exportBtn = document.getElementById('exportBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const searchInput = document.getElementById('searchInput');
+            // 獲取DOM元素
+            const taskInput = document.getElementById('task-input');
+            const addBtn = document.getElementById('add-btn');
+            const taskList = document.getElementById('task-list');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const totalTasksEl = document.getElementById('total-tasks');
+            const completedTasksEl = document.getElementById('completed-tasks');
+            const pendingTasksEl = document.getElementById('pending-tasks');
             
-            // 統計元素
-            const totalTasksEl = document.getElementById('totalTasks');
-            const completedTasksEl = document.getElementById('completedTasks');
-            const pendingTasksEl = document.getElementById('pendingTasks');
-            const urgentTasksEl = document.getElementById('urgentTasks');
+            let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+            let currentFilter = 'all';
             
-            // 當前週開始日期（週一）
-            let currentWeekStart = getMonday(new Date());
-            let editingTask = null;
-            
-            // 初始化
-            renderWeek(currentWeekStart);
-            updateStats();
-            
-            // 事件監聽
-            prevWeekBtn.addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
-                renderWeek(currentWeekStart);
-            });
-            
-            nextWeekBtn.addEventListener('click', function() {
-                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
-                renderWeek(currentWeekStart);
-            });
-            
-            addTaskBtn.addEventListener('click', function() {
-                editingTask = null;
-                taskId.value = '';
-                modalTitle.textContent = '新增任務';
-                taskForm.reset();
-                // 設置默認日期為今天
-                document.getElementById('taskDate').valueAsDate = new Date();
-                taskModal.style.display = 'flex';
-            });
-            
-            taskForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveTask();
-            });
-            
-            cancelTask.addEventListener('click', closeTaskModal);
-            closeModal.addEventListener('click', closeTaskModal);
-            
-            darkModeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                const isDarkMode = document.body.classList.contains('dark-mode');
-                darkModeToggle.innerHTML = isDarkMode ? 
-                    '<i class="fas fa-sun"></i> 淺色模式' : 
-                    '<i class="fas fa-moon"></i> 深色模式';
-                localStorage.setItem('darkMode', isDarkMode);
-            });
-            
-            exportBtn.addEventListener('click', exportData);
-            clearBtn.addEventListener('click', clearAllTasks);
-            
-            searchInput.addEventListener('input', function() {
-                renderWeek(currentWeekStart, this.value);
-            });
-            
-            // 檢查是否啟用深色模式
-            if (localStorage.getItem('darkMode') === 'true') {
-                document.body.classList.add('dark-mode');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> 淺色模式';
-            }
-            
-            // 獲取週一的日期
-            function getMonday(date) {
-                const d = new Date(date);
-                const day = d.getDay();
-                const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-                return new Date(d.setDate(diff));
-            }
-            
-            // 格式化日期
-            function formatDate(date) {
-                return date.toLocaleDateString('zh-TW', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+            // 初始化應用
+            function init() {
+                renderTasks();
+                updateStats();
+                
+                // 添加事件監聽器
+                addBtn.addEventListener('click', addTask);
+                taskInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') addTask();
+                });
+                
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        currentFilter = this.dataset.filter;
+                        renderTasks();
+                    });
                 });
             }
             
-            // 獲取日期鍵（用於存儲）
-            function getDateKey(date) {
-                return date.toISOString().split('T')[0];
+            // 添加新任務
+            function addTask() {
+                const text = taskInput.value.trim();
+                if (text === '') return;
+                
+                const newTask = {
+                    id: Date.now(),
+                    text: text,
+                    completed: false,
+                    timestamp: new Date().toISOString()
+                };
+                
+                tasks.unshift(newTask);
+                saveTasks();
+                renderTasks();
+                updateStats();
+                
+                taskInput.value = '';
+                taskInput.focus();
             }
             
-            // 從本地存儲獲取任務
-            function getTasks() {
-                return JSON.parse(localStorage.getItem('weeklyTasks')) || {};
-            }
-            
-            // 保存任務到本地存儲
-            function saveTasks(tasks) {
-                localStorage.setItem('weeklyTasks', JSON.stringify(tasks));
-            }
-            
-            // 渲染整週
-            function renderWeek(startDate, searchTerm = '') {
-                const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + 6);
-                weekTitle.textContent = `${formatDate(startDate)} - ${formatDate(endDate)}`;
-                
-                weekGrid.innerHTML = '';
-                
-                const dayNames = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
-                const tasks = getTasks();
-                
-                for (let i = 0; i < 7; i++) {
-                    const currentDate = new Date(startDate);
-                    currentDate.setDate(currentDate.getDate() + i);
-                    
-                    const dayKey = getDateKey(currentDate);
-                    const dayTasks = tasks[dayKey] || [];
-                    
-                    // 過濾任務（如果有搜尋詞）
-                    const filteredTasks = searchTerm ? 
-                        dayTasks.filter(task => 
-                            task.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()))
-                        ) : dayTasks;
-                    
-                    const dayColumn = document.createElement('div');
-                    dayColumn.className = 'day-column';
-                    
-                    const dayHeader = document.createElement('div');
-                    dayHeader.className = 'day-header';
-                    dayHeader.innerHTML = `
-                        ${dayNames[i]}
-                        <div class="day-date">${formatDate(currentDate)}</div>
-                    `;
-                    
-                    const taskList = document.createElement('div');
-                    taskList.className = 'task-list';
-                    
-                    if (filteredTasks.length === 0) {
-                        const emptyState = document.createElement('div');
-                        emptyState.className = 'empty-state';
-                        emptyState.textContent = searchTerm ? '沒有符合的任務' : '暫無任務';
-                        taskList.appendChild(emptyState);
-                    } else {
-                        filteredTasks.forEach((task, index) => {
-                            const taskItem = createTaskItem(dayKey, index, task);
-                            taskList.appendChild(taskItem);
-                        });
-                    }
-                    
-                    const addTaskContainer = document.createElement('div');
-                    addTaskContainer.className = 'add-task';
-                    
-                    const taskInput = document.createElement('input');
-                    taskInput.className = 'task-input';
-                    taskInput.type = 'text';
-                    taskInput.placeholder = '快速新增任務...';
-                    
-                    const addBtn = document.createElement('button');
-                    addBtn.className = 'add-btn';
-                    addBtn.innerHTML = '<i class="fas fa-plus"></i>';
-                    
-                    addBtn.addEventListener('click', function() {
-                        addQuickTask(dayKey, taskInput);
-                    });
-                    
-                    taskInput.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            addQuickTask(dayKey, taskInput);
-                        }
-                    });
-                    
-                    addTaskContainer.appendChild(taskInput);
-                    addTaskContainer.appendChild(addBtn);
-                    
-                    dayColumn.appendChild(dayHeader);
-                    dayColumn.appendChild(taskList);
-                    dayColumn.appendChild(addTaskContainer);
-                    
-                    weekGrid.appendChild(dayColumn);
-                }
-                
+            // 刪除任務
+            function deleteTask(id) {
+                tasks = tasks.filter(task => task.id !== id);
+                saveTasks();
+                renderTasks();
                 updateStats();
             }
             
-            // 創建任務項目
-            function createTaskItem(dayKey, index, task) {
-                const taskItem = document.createElement('div');
-                taskItem.className = 'task-item';
-                taskItem.draggable = true;
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'task-checkbox';
-                checkbox.checked = task.completed;
-                
-                const taskContent = document.createElement('div');
-                taskContent.className = 'task-content';
-                
-                const taskText = document.createElement('div');
-                taskText.className = 'task-text' + (task.completed ? ' task-completed' : '');
-                taskText.textContent = task.text;
-                
-                taskContent.appendChild(taskText);
-                
-                // 添加標籤（如果有的話）
-                if (task.tag) {
-                    const taskTags = document.createElement('div');
-                    taskTags.className = 'task-tags';
-                    
-                    const tag = document.createElement('span');
-                    tag.className = `task-tag tag-${task.tag}`;
-                    
-                    switch(task.tag) {
-                        case 'work':
-                            tag.textContent = '工作';
-                            break;
-                        case 'personal':
-                            tag.textContent = '個人';
-                            break;
-                        case 'urgent':
-                            tag.textContent = '緊急';
-                            break;
+            // 切換完成狀態
+            function toggleCompleted(id) {
+                tasks = tasks.map(task => {
+                    if (task.id === id) {
+                        return {...task, completed: !task.completed};
                     }
-                    
-                    taskTags.appendChild(tag);
-                    taskContent.appendChild(taskTags);
-                }
-                
-                const taskActions = document.createElement('div');
-                taskActions.className = 'task-actions';
-                
-                const editBtn = document.createElement('button');
-                editBtn.className = 'task-btn';
-                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'task-btn';
-                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                
-                // 切換任務完成狀態
-                checkbox.addEventListener('change', function() {
-                    const tasks = getTasks();
-                    tasks[dayKey][index].completed = this.checked;
-                    saveTasks(tasks);
-                    renderWeek(currentWeekStart, searchInput.value);
+                    return task;
                 });
                 
-                // 編輯任務
-                editBtn.addEventListener('click', function() {
-                    editingTask = { dayKey, index };
-                    const tasks = getTasks();
-                    const task = tasks[dayKey][index];
-                    
-                    taskId.value = `${dayKey}-${index}`;
-                    modalTitle.textContent = '編輯任務';
-                    document.getElementById('taskTitle').value = task.text;
-                    document.getElementById('taskDescription').value = task.description || '';
-                    document.getElementById('taskDate').value = dayKey;
-                    document.getElementById('taskTag').value = task.tag || '';
-                    
-                    taskModal.style.display = 'flex';
-                });
-                
-                // 刪除任務
-                deleteBtn.addEventListener('click', function() {
-                    if (confirm('確定要刪除這個任務嗎？')) {
-                        const tasks = getTasks();
-                        tasks[dayKey].splice(index, 1);
-                        saveTasks(tasks);
-                        renderWeek(currentWeekStart, searchInput.value);
-                    }
-                });
-                
-                // 拖放功能
-                taskItem.addEventListener('dragstart', function(e) {
-                    e.dataTransfer.setData('text/plain', `${dayKey},${index}`);
-                });
-                
-                taskItem.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                });
-                
-                taskItem.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    const [sourceDayKey, sourceIndex] = e.dataTransfer.getData('text/plain').split(',');
-                    const targetDayKey = dayKey;
-                    
-                    if (sourceDayKey !== targetDayKey) {
-                        moveTask(sourceDayKey, parseInt(sourceIndex), targetDayKey);
-                    }
-                });
-                
-                taskActions.appendChild(editBtn);
-                taskActions.appendChild(deleteBtn);
-                
-                taskItem.appendChild(checkbox);
-                taskItem.appendChild(taskContent);
-                taskItem.appendChild(taskActions);
-                
-                return taskItem;
+                saveTasks();
+                renderTasks();
+                updateStats();
             }
             
-            // 快速新增任務
-            function addQuickTask(dayKey, inputElement) {
-                const taskText = inputElement.value.trim();
-                if (taskText) {
-                    const tasks = getTasks();
-                    
-                    if (!tasks[dayKey]) {
-                        tasks[dayKey] = [];
+            // 編輯任務
+            function editTask(id, newText) {
+                if (newText.trim() === '') return;
+                
+                tasks = tasks.map(task => {
+                    if (task.id === id) {
+                        return {...task, text: newText};
                     }
+                    return task;
+                });
+                
+                saveTasks();
+                renderTasks();
+            }
+            
+            // 保存任務到localStorage
+            function saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+            }
+            
+            // 渲染任務列表
+            function renderTasks() {
+                // 根據當前篩選條件過濾任務
+                let filteredTasks = tasks;
+                if (currentFilter === 'completed') {
+                    filteredTasks = tasks.filter(task => task.completed);
+                } else if (currentFilter === 'pending') {
+                    filteredTasks = tasks.filter(task => !task.completed);
+                }
+                
+                // 清空任務列表
+                taskList.innerHTML = '';
+                
+                if (filteredTasks.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>目前沒有${currentFilter !== 'all' ? currentFilter === 'completed' ? '已完成' : '待完成' : ''}的任務</p>
+                    `;
+                    taskList.appendChild(emptyState);
+                    return;
+                }
+                
+                // 添加任務到列表
+                filteredTasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.className = `task-item ${task.completed ? 'completed' : ''}`;
+                    li.dataset.id = task.id;
                     
-                    tasks[dayKey].push({
-                        text: taskText,
-                        completed: false
+                    li.innerHTML = `
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+                        <span class="task-text">${task.text}</span>
+                        <div class="task-actions">
+                            <button class="edit-btn"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    `;
+                    
+                    taskList.appendChild(li);
+                    
+                    // 添加事件監聽器
+                    const checkbox = li.querySelector('.task-checkbox');
+                    const editBtn = li.querySelector('.edit-btn');
+                    const deleteBtn = li.querySelector('.delete-btn');
+                    const taskText = li.querySelector('.task-text');
+                    
+                    checkbox.addEventListener('change', () => toggleCompleted(task.id));
+                    
+                    deleteBtn.addEventListener('click', () => deleteTask(task.id));
+                    
+                    editBtn.addEventListener('click', () => {
+                        const newText = prompt('編輯任務:', task.text);
+                        if (newText !== null) editTask(task.id, newText);
                     });
-                    
-                    saveTasks(tasks);
-                    renderWeek(currentWeekStart, searchInput.value);
-                    inputElement.value = '';
-                }
-            }
-            
-            // 保存任務（表單提交）
-            function saveTask() {
-                const title = document.getElementById('taskTitle').value.trim();
-                const description = document.getElementById('taskDescription').value.trim();
-                const date = document.getElementById('taskDate').value;
-                const tag = document.getElementById('taskTag').value;
-                
-                if (!title) return;
-                
-                const tasks = getTasks();
-                const dayKey = date;
-                
-                if (!tasks[dayKey]) {
-                    tasks[dayKey] = [];
-                }
-                
-                if (editingTask) {
-                    // 編輯現有任務
-                    tasks[editingTask.dayKey][editingTask.index] = {
-                        text: title,
-                        description: description,
-                        completed: tasks[editingTask.dayKey][editingTask.index].completed,
-                        tag: tag
-                    };
-                } else {
-                    // 新增任務
-                    tasks[dayKey].push({
-                        text: title,
-                        description: description,
-                        completed: false,
-                        tag: tag
-                    });
-                }
-                
-                saveTasks(tasks);
-                closeTaskModal();
-                renderWeek(currentWeekStart, searchInput.value);
-            }
-            
-            // 移動任務（拖放）
-            function moveTask(sourceDayKey, sourceIndex, targetDayKey) {
-                const tasks = getTasks();
-                
-                if (!tasks[targetDayKey]) {
-                    tasks[targetDayKey] = [];
-                }
-                
-                const task = tasks[sourceDayKey][sourceIndex];
-                tasks[targetDayKey].push(task);
-                tasks[sourceDayKey].splice(sourceIndex, 1);
-                
-                saveTasks(tasks);
-                renderWeek(currentWeekStart, searchInput.value);
+                });
             }
             
             // 更新統計數據
             function updateStats() {
-                const tasks = getTasks();
-                let total = 0;
-                let completed = 0;
-                let urgent = 0;
-                
-                Object.values(tasks).forEach(dayTasks => {
-                    total += dayTasks.length;
-                    completed += dayTasks.filter(task => task.completed).length;
-                    urgent += dayTasks.filter(task => task.tag === 'urgent').length;
-                });
+                const total = tasks.length;
+                const completed = tasks.filter(task => task.completed).length;
+                const pending = total - completed;
                 
                 totalTasksEl.textContent = total;
                 completedTasksEl.textContent = completed;
-                pendingTasksEl.textContent = total - completed;
-                urgentTasksEl.textContent = urgent;
+                pendingTasksEl.textContent = pending;
             }
             
-            // 導出數據
-            function exportData() {
-                const tasks = getTasks();
-                const dataStr = JSON.stringify(tasks);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `tasks-${new Date().toISOString().split('T')[0]}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-            }
-            
-            // 清除所有任務
-            function clearAllTasks() {
-                if (confirm('確定要清除所有任務嗎？此操作無法復原。')) {
-                    localStorage.removeItem('weeklyTasks');
-                    renderWeek(currentWeekStart);
-                }
-            }
-            
-            // 關閉模態框
-            function closeTaskModal() {
-                taskModal.style.display = 'none';
-            }
+            // 初始化應用
+            init();
         });
     </script>
 </body>
